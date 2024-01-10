@@ -213,5 +213,6 @@ fn main() {
         if input_string.to_lowercase() == "x" {
             active = false
         }
+        print!("{}", input_string);
     }
 }
