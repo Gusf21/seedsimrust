@@ -204,7 +204,11 @@ impl Field {
 
 fn main() {
     let mut active: bool = true;
-    let mut field = Field::initialise(50, 75);
+
+    let height = get_int("Please enter the height of your field");
+    let width = get_int("Please enter the width of your field");
+
+    let mut field = Field::initialise(height, width);
 
     field.list();
 
@@ -267,4 +271,24 @@ fn get_mode() -> String {
         }
     }
     return String::from(return_string);
+}
+
+fn get_int(question: &str) -> i16 {
+    let mut valid = false;
+    let mut input_string = String::new();
+    while !valid {
+        println!("{}", question);
+        match io::stdin().read_line(&mut input_string) {
+            Ok(_r) => {
+                valid = true
+            }
+            Err(error) => {
+                println!("Error: {}", error)
+            }
+        }
+        if !valid {
+            println!("Invalid input!");
+        }
+    }
+    return input_string.parse::<i16>().unwrap();
 }
