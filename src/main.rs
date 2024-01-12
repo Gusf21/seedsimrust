@@ -186,9 +186,9 @@ impl Field {
         print!("\n");
         for tile in &self.tiles {
             if tile.plant {
-                print!("P");
+                print!("{color_green}P{color_reset}");
             } else if tile.seed {
-                print!("S")
+                print!("{color_yellow}S{color_reset}")
             } else if tile.soil {
                 print!(".")
             }
