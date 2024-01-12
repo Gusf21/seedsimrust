@@ -27,20 +27,20 @@ impl Tile {
         if seeded {
             tile.seed = true;
         }
-        return tile;
+        tile
     }
 }
 
 impl Field {
     fn initialise(height: i32, width: i32) -> Field {
         let mut x = Field {
-            height: height,
-            width: width,
+            height,
+            width,
             year: 1,
             tiles: Vec::new()
         };
         x.populate();
-        return x;
+        x
     }
 
     fn populate(&mut self) {
@@ -72,10 +72,8 @@ impl Field {
     }
 
     fn plant_seed(&mut self, position: i32) {
-        if (position >= 0) & (position < self.tiles.len() as i32) {
-            if self.tiles[position as usize].soil & !self.tiles[position as usize].plant {
-                self.tiles[position as usize].seed = true;
-           }
+        if ((position >= 0) & (position < self.tiles.len() as i32)) && (self.tiles[position as usize].soil & !self.tiles[position as usize].plant) {
+            self.tiles[position as usize].seed = true;
     }
     }
 
@@ -115,7 +113,7 @@ impl Field {
                 }
             }
         }
-        println!("Year: {}\nSeason: {}\n", self.year, "spring");
+        println!("Year: {}\nSeason: spring\n", self.year);
         if frost {
             println!("There has been a frost!");
             self.count_plants();
@@ -139,7 +137,7 @@ impl Field {
                 }
             }
         }
-        println!("Year: {}\nSeason: {}\n", self.year, "summer");
+        println!("Year: {}\nSeason: summer\n", self.year);
         if drought {
             println!("There has been a drought!");
             self.count_plants();
@@ -154,7 +152,7 @@ impl Field {
                 self.plant_seeds(i);
             }
         }
-        println!("Year: {}\nSeason: {}\n", self.year, "autumn");
+        println!("Year: {}\nSeason: autumn\n", self.year);
         self.display_field();
     }
 
@@ -164,7 +162,7 @@ impl Field {
                 tile.plant = false
             }
         }
-        println!("Year: {}\nSeason: {}\n", self.year, "winter");
+        println!("Year: {}\nSeason: winter\n", self.year);
         self.display_field();
         self.year += 1;
     }
@@ -183,7 +181,7 @@ impl Field {
     fn display_field(&self) {
         let mut index = 0;
         let mut row = 0;
-        print!("\n");
+        println!();
         for tile in &self.tiles {
             if tile.plant {
                 print!("{color_green}P{color_reset}");
@@ -198,7 +196,7 @@ impl Field {
                 row += 1;
             }
         }
-        print!("\n");
+        println!();
     }
 
     fn list(&self) {
@@ -260,12 +258,7 @@ fn get_mode() -> String {
 
         return_string = input_string.trim();
 
-        if return_string.to_lowercase() == "t" {
-            valid = true;
-        }
-        else if return_string.to_lowercase() == "s" {
-            valid = true;
-        }
+        if (return_string.to_lowercase() == "t") | (return_string.to_lowercase() == "s") {valid = true}
         else if return_string.parse::<i32>().is_ok()  {
             if return_string.parse::<i32>().unwrap() > 0 {
                 valid = true;
@@ -274,7 +267,7 @@ fn get_mode() -> String {
             println!("Invalid input!");
         }
     }
-    return String::from(return_string);
+    String::from(return_string)
 }
 
 fn get_int(question: &str) -> i32 {
