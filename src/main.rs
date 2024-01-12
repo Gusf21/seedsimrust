@@ -279,16 +279,17 @@ fn get_int(question: &str) -> i16 {
     while !valid {
         println!("{}", question);
         match io::stdin().read_line(&mut input_string) {
-            Ok(_r) => {
-                valid = true
-            }
+            Ok(_r) => {}
             Err(error) => {
                 println!("Error: {}", error)
             }
         }
-        if !valid {
+        if input_string.trim().parse::<i16>().is_ok() {
+            valid = true;
+        }
+        else {
             println!("Invalid input!");
         }
     }
-    return input_string.parse::<i16>().unwrap();
+    return input_string.trim().parse::<i16>().unwrap();
 }
