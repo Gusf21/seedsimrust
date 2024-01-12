@@ -1,4 +1,6 @@
 use rand::Rng;
+use std::thread;
+use std::time::Duration;
 use std::io;
 
 struct Tile {
@@ -205,14 +207,64 @@ fn main() {
     let mut field = Field::initialise(50, 75);
 
     field.list();
-    while active {
-        field.sim_year();
-        println!("Press enter to continue, press X to stop");
-        let mut input_string: String = String::new();
-        _ = io::stdin().read_line(&mut input_string);
-        if input_string.to_lowercase() == "x" {
-            active = false
+
+    let binding = get_mode();
+    let mode = binding.as_str();
+
+    if  mode == "t" {
+        loop {
+            field.sim_year();
+            thread::sleep(Duration::from_secs(1));
         }
-        print!("{}", input_string);
     }
+    else if mode == "s" {
+        while active {
+            field.sim_year();
+            println!("Press enter to continue, press X to stop");
+            let mut input_string: String = String::new();
+            _ = io::stdin().read_line(&mut input_string);
+            if input_string.trim().to_lowercase() == "x" {
+                active = false
+            }
+        }
+    }
+    else {
+        let yearnum: i16 = mode.parse::<i16>().unwrap();
+        for _i in 0..yearnum {
+            field.sim_year();
+            thread::sleep(Duration::from_secs(1));
+        }
+    }
+
+    
+}
+
+fn get_mode() -> String {
+    let mut valid = false;
+    let mut input_string: String = String::new();
+    let mut return_string = "";
+    while !valid {
+        println!("Please choose your mode, t for timer stepping, s for manual stepping, or a positive integer for a set number of years.");
+        match io::stdin().read_line(&mut input_string) {
+            Ok(_result) => {}
+            Err(error) => {println!("Error: {}", error)}
+        }
+
+        return_string = input_string.trim();
+
+        if return_string.to_lowercase() == "t" {
+            valid = true;
+        }
+        else if return_string.to_lowercase() == "s" {
+            valid = true;
+        }
+        else if return_string.parse::<i16>().is_ok()  {
+            if return_string.parse::<i16>().unwrap() > 0 {
+                valid = true;
+            }
+        } else {
+            println!("Invalid input!");
+        }
+    }
+    return String::from(return_string);
 }
