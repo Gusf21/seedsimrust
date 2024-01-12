@@ -1,6 +1,7 @@
 use rand::Rng;
 use std::thread;
 use std::time::Duration;
+use inline_colorization::*;
 use std::io;
 
 struct Tile {
@@ -10,9 +11,9 @@ struct Tile {
 }
 
 struct Field {
-    height: i16,
-    width: i16,
-    year: i16,
+    height: i32,
+    width: i32,
+    year: i32,
     tiles: Vec<Tile>
 }
 
@@ -31,7 +32,7 @@ impl Tile {
 }
 
 impl Field {
-    fn initialise(height: i16, width: i16) -> Field {
+    fn initialise(height: i32, width: i32) -> Field {
         let mut x = Field {
             height: height,
             width: width,
@@ -45,7 +46,7 @@ impl Field {
     fn populate(&mut self) {
         for i in 0..self.height {
             for j in 0..self.width {
-                if ((self.height / 2) as i16 == i - 1) & ((self.width / 2) as i16 == j - 1) {
+                if ((self.height / 2) as i32 == i - 1) & ((self.width / 2) as i32 == j - 1) {
                     self.tiles.push(Tile::default(true));
                 }
                 else {
@@ -56,7 +57,7 @@ impl Field {
     }
 
     fn count_plants(&self) {
-        let mut plants: i16 = 0;
+        let mut plants: i32 = 0;
         for tile in &self.tiles {
             if tile.plant {
                 plants += 1;
@@ -70,15 +71,15 @@ impl Field {
         }
     }
 
-    fn plant_seed(&mut self, position: i16) {
-        if (position >= 0) & (position < self.tiles.len() as i16) {
+    fn plant_seed(&mut self, position: i32) {
+        if (position >= 0) & (position < self.tiles.len() as i32) {
             if self.tiles[position as usize].soil & !self.tiles[position as usize].plant {
                 self.tiles[position as usize].seed = true;
            }
     }
     }
 
-    fn plant_seeds(&mut self, position: i16) {
+    fn plant_seeds(&mut self, position: i32) {
         if (position % self.width != 0) | (position == 0) {
             self.plant_seed(position - 1);
             self.plant_seed(position - (self.width + 1));
@@ -147,7 +148,7 @@ impl Field {
     }
 
     fn sim_autumn(&mut self) {
-        let length = self.tiles.len() as i16;
+        let length = self.tiles.len() as i32;
         for i in 0..length {
             if self.tiles[i as usize].plant {
                 self.plant_seeds(i);
@@ -170,9 +171,13 @@ impl Field {
 
     fn sim_year(&mut self) {
         self.sim_spring();
+        thread::sleep(Duration::from_secs(1));
         self.sim_summer();
+        thread::sleep(Duration::from_secs(1));
         self.sim_autumn();
+        thread::sleep(Duration::from_secs(1));
         self.sim_winter();
+        thread::sleep(Duration::from_secs(1));
     }
 
     fn display_field(&self) {
@@ -218,7 +223,6 @@ fn main() {
     if  mode == "t" {
         loop {
             field.sim_year();
-            thread::sleep(Duration::from_secs(1));
         }
     }
     else if mode == "s" {
@@ -233,7 +237,7 @@ fn main() {
         }
     }
     else {
-        let yearnum: i16 = mode.parse::<i16>().unwrap();
+        let yearnum: i32 = mode.parse::<i32>().unwrap();
         for _i in 0..yearnum {
             field.sim_year();
             thread::sleep(Duration::from_secs(1));
@@ -262,8 +266,8 @@ fn get_mode() -> String {
         else if return_string.to_lowercase() == "s" {
             valid = true;
         }
-        else if return_string.parse::<i16>().is_ok()  {
-            if return_string.parse::<i16>().unwrap() > 0 {
+        else if return_string.parse::<i32>().is_ok()  {
+            if return_string.parse::<i32>().unwrap() > 0 {
                 valid = true;
             }
         } else {
@@ -273,7 +277,7 @@ fn get_mode() -> String {
     return String::from(return_string);
 }
 
-fn get_int(question: &str) -> i16 {
+fn get_int(question: &str) -> i32 {
     let mut valid = false;
     let mut input_string = String::new();
     while !valid {
@@ -284,12 +288,12 @@ fn get_int(question: &str) -> i16 {
                 println!("Error: {}", error)
             }
         }
-        if input_string.trim().parse::<i16>().is_ok() {
+        if input_string.trim().parse::<i32>().is_ok() {
             valid = true;
         }
         else {
             println!("Invalid input!");
         }
     }
-    return input_string.trim().parse::<i16>().unwrap();
+    return input_string.trim().parse::<i32>().unwrap();
 }
