@@ -61,6 +61,8 @@ impl Field {
         }
     }
 
+
+    /*
     fn count_plants(&self) {
         let mut plants: i32 = 0;
         for tile in &self.tiles {
@@ -75,7 +77,9 @@ impl Field {
             println!("There are {} plant's growing", plants);
         }
     }
+    */
 
+    
     fn plant_seed(&mut self, position: i32) {
         if ((position >= 0) & (position < self.tiles.len() as i32)) && (self.tiles[position as usize].soil & !self.tiles[position as usize].plant) {
             self.tiles[position as usize].seed = true;
