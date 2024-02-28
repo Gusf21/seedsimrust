@@ -14,6 +14,8 @@ struct Field {
     height: i32,
     width: i32,
     year: i32,
+    plant_rarity: i32,
+    timer: i32,
     tiles: Vec<Tile>
 }
 
@@ -32,11 +34,13 @@ impl Tile {
 }
 
 impl Field {
-    fn initialise(height: i32, width: i32) -> Field {
+    fn initialise(height: i32, width: i32, plant_rarity: i32, timer: i32) -> Field {
         let mut x = Field {
             height,
             width,
             year: 1,
+            plant_rarity,
+            timer,
             tiles: Vec::new()
         };
         x.populate();
@@ -44,9 +48,10 @@ impl Field {
     }
 
     fn populate(&mut self) {
-        for i in 0..self.height {
-            for j in 0..self.width {
-                if ((self.height / 2) as i32 == i - 1) & ((self.width / 2) as i32 == j - 1) {
+        let mut rng = rand::thread_rng();
+        for _i in 0..self.height {
+            for _j in 0..self.width {
+                if rng.gen_range(0..self.plant_rarity) == 0 {
                     self.tiles.push(Tile::default(true));
                 }
                 else {
@@ -116,7 +121,7 @@ impl Field {
         println!("Year: {}\nSeason: spring\n", self.year);
         if frost {
             println!("There has been a frost!");
-            self.count_plants();
+            //self.count_plants();
         }
         self.display_field();
 
@@ -140,7 +145,7 @@ impl Field {
         println!("Year: {}\nSeason: summer\n", self.year);
         if drought {
             println!("There has been a drought!");
-            self.count_plants();
+            //self.count_plants();
         }
         self.display_field();
     }
@@ -168,14 +173,18 @@ impl Field {
     }
 
     fn sim_year(&mut self) {
+        print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
         self.sim_spring();
-        thread::sleep(Duration::from_secs(1));
+        thread::sleep(Duration::from_millis(self.timer as u64));
+        print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
         self.sim_summer();
-        thread::sleep(Duration::from_secs(1));
+        thread::sleep(Duration::from_millis(self.timer as u64));
+        print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
         self.sim_autumn();
-        thread::sleep(Duration::from_secs(1));
+        thread::sleep(Duration::from_millis(self.timer as u64));
+        print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
         self.sim_winter();
-        thread::sleep(Duration::from_secs(1));
+        thread::sleep(Duration::from_millis(self.timer as u64));
     }
 
     fn display_field(&self) {
@@ -188,7 +197,7 @@ impl Field {
             } else if tile.seed {
                 print!("{color_yellow}S{color_reset}")
             } else if tile.soil {
-                print!(".")
+                print!(" ")
             }
             index += 1;
             if (index / (row + 1)) == self.width {
@@ -210,8 +219,10 @@ fn main() {
 
     let height = get_int("Please enter the height of your field");
     let width = get_int("Please enter the width of your field");
+    let plant_rarity = get_int("What is the plant rarity?");
+    let timer = get_int("What is the timer");
 
-    let mut field = Field::initialise(height, width);
+    let mut field = Field::initialise(height, width, plant_rarity, timer);
 
     field.list();
 
@@ -238,7 +249,6 @@ fn main() {
         let yearnum: i32 = mode.parse::<i32>().unwrap();
         for _i in 0..yearnum {
             field.sim_year();
-            thread::sleep(Duration::from_secs(1));
         }
     }
 
